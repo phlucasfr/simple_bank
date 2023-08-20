@@ -6,6 +6,7 @@ Simple Bank is a digital finance application tailored for Common Users and Merch
 - Docker: https://www.docker.com/
 - Testify: https://github.com/stretchr/testify
 - Postgres: https://www.postgresql.org/
+- Migrate: https://github.com/golang-migrate/migrate
 - pq: https://github.com/lib/pq
 
 <div style="text-align:center;">
