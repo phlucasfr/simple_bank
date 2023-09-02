@@ -133,7 +133,7 @@ func (q *Queries) ListWallets(ctx context.Context, arg ListWalletsParams) ([]Wal
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Wallet
+	items := []Wallet{}
 	for rows.Next() {
 		var i Wallet
 		if err := rows.Scan(
