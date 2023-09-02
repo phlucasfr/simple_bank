@@ -89,3 +89,29 @@ func (server *Server) listWallets(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, wallets)
 }
+
+type deleteWalletRequest struct {
+	Id int64 `uri:"id" binding:"required,min=1"`
+}
+
+func (server *Server) deleteWallet(ctx *gin.Context) {
+	var req deleteWalletRequest
+
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	err := server.store.DeleteWallet(ctx, req.Id)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, successResponse("Wallet deleted"))
+}

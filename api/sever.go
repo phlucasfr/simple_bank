@@ -20,6 +20,7 @@ func NewServer(store *db.Store) *Server {
 	router.POST("/wallets", server.createWallet)
 	router.GET("/wallets/:id", server.getWallet)
 	router.GET("/wallets", server.listWallets)
+	router.DELETE("/wallets/:id", server.deleteWallet)
 
 	//add routes to router
 	server.router = router
@@ -33,4 +34,8 @@ func (server *Server) StartServer(address string) error {
 
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
+}
+
+func successResponse(msg string) gin.H {
+	return gin.H{"msg": msg}
 }
