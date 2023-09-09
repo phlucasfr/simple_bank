@@ -115,3 +115,35 @@ func (server *Server) deleteWallet(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, successResponse("Wallet deleted"))
 }
+
+type updateWalletRequest struct {
+	ID      int64 `json:"id" binding:"required,min=1"`
+	Balance int64 `json:"balance" binding:"required"`
+}
+
+func (server *Server) updateWallet(ctx *gin.Context) {
+	var req updateWalletRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	arg := db.UpdateWalletParams{
+		ID:      req.ID,
+		Balance: req.Balance,
+	}
+
+	wallet, err := server.store.UpdateWallet(ctx, arg)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, wallet)
+}

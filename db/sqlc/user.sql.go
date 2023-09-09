@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -123,71 +124,31 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 	return items, nil
 }
 
-const updateUserEmail = `-- name: UpdateUserEmail :one
+const updateUser = `-- name: UpdateUser :one
 UPDATE users
-SET email = $2, last_updated = now()
+SET 
+    password = $2,
+    email = $3,
+    is_merchant = $4,
+    last_updated = now()
 WHERE id = $1
 RETURNING id, full_name, cpf_cnpj, email, password, is_merchant, created_at, last_updated
 `
 
-type UpdateUserEmailParams struct {
-	ID    int64  `json:"id"`
-	Email string `json:"email"`
+type UpdateUserParams struct {
+	ID         int64        `json:"id"`
+	Password   string       `json:"password"`
+	Email      string       `json:"email"`
+	IsMerchant sql.NullBool `json:"is_merchant"`
 }
 
-func (q *Queries) UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUserEmail, arg.ID, arg.Email)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.FullName,
-		&i.CpfCnpj,
-		&i.Email,
-		&i.Password,
-		&i.IsMerchant,
-		&i.CreatedAt,
-		&i.LastUpdated,
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUser,
+		arg.ID,
+		arg.Password,
+		arg.Email,
+		arg.IsMerchant,
 	)
-	return i, err
-}
-
-const updateUserIsMerchant = `-- name: UpdateUserIsMerchant :one
-UPDATE users
-SET is_merchant = CASE WHEN is_merchant = true THEN false ELSE true END, last_updated = now()
-WHERE id = $1
-RETURNING id, full_name, cpf_cnpj, email, password, is_merchant, created_at, last_updated
-`
-
-func (q *Queries) UpdateUserIsMerchant(ctx context.Context, id int64) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUserIsMerchant, id)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.FullName,
-		&i.CpfCnpj,
-		&i.Email,
-		&i.Password,
-		&i.IsMerchant,
-		&i.CreatedAt,
-		&i.LastUpdated,
-	)
-	return i, err
-}
-
-const updateUserPassword = `-- name: UpdateUserPassword :one
-UPDATE users
-SET password = $2, last_updated = now()
-WHERE id = $1
-RETURNING id, full_name, cpf_cnpj, email, password, is_merchant, created_at, last_updated
-`
-
-type UpdateUserPasswordParams struct {
-	ID       int64  `json:"id"`
-	Password string `json:"password"`
-}
-
-func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUserPassword, arg.ID, arg.Password)
 	var i User
 	err := row.Scan(
 		&i.ID,

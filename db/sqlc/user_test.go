@@ -54,58 +54,28 @@ func TestGetUser(t *testing.T) {
 	require.WithinDuration(t, user1.CreatedAt.Time, user2.CreatedAt.Time, time.Second)
 }
 
-func TestUpdateUserPassword(t *testing.T) {
+func TestUpdateUser(t *testing.T) {
 	user1 := createRandomUser(t)
 
-	userParams := UpdateUserPasswordParams{
+	userParams := UpdateUserParams{
 		ID:       user1.ID,
 		Password: util.RandomString(12),
+		Email:    util.RandomString(6) + "@test.go",
+		IsMerchant: sql.NullBool{
+			Bool:  false,
+			Valid: false,
+		},
 	}
 
-	user2, err := testQueries.UpdateUserPassword(context.Background(), userParams)
+	user2, err := testQueries.UpdateUser(context.Background(), userParams)
 
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
 	require.Equal(t, user1.ID, user2.ID)
 	require.Equal(t, userParams.Password, user2.Password)
-
-	require.WithinDuration(t, user1.CreatedAt.Time, user2.CreatedAt.Time, time.Second)
-}
-
-func TestUpdateUserEmail(t *testing.T) {
-	user1 := createRandomUser(t)
-
-	userParams := UpdateUserEmailParams{
-		ID:    user1.ID,
-		Email: util.RandomString(10),
-	}
-
-	user2, err := testQueries.UpdateUserEmail(context.Background(), userParams)
-
-	require.NoError(t, err)
-	require.NotEmpty(t, user2)
-
-	require.Equal(t, user1.ID, user2.ID)
 	require.Equal(t, userParams.Email, user2.Email)
-
-	require.WithinDuration(t, user1.CreatedAt.Time, user2.CreatedAt.Time, time.Second)
-}
-
-func TestUpdateUserIsMerchant(t *testing.T) {
-	user1 := createRandomUser(t)
-	user2, err := testQueries.UpdateUserIsMerchant(context.Background(), user1.ID)
-
-	require.NoError(t, err)
-	require.NotEmpty(t, user2)
-
-	user1Get, err := testQueries.GetUser(context.Background(), user1.ID)
-
-	require.NoError(t, err)
-	require.NotEmpty(t, user1Get)
-
-	require.Equal(t, user1.ID, user2.ID)
-	require.Equal(t, user1Get.IsMerchant, user2.IsMerchant)
+	require.Equal(t, userParams.IsMerchant, user2.IsMerchant)
 
 	require.WithinDuration(t, user1.CreatedAt.Time, user2.CreatedAt.Time, time.Second)
 }
