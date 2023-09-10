@@ -8,10 +8,12 @@ Simple Bank is a digital finance application tailored for Common Users and Merch
 - Postgres: https://www.postgresql.org/
 - Migrate: https://github.com/golang-migrate/migrate
 - pq: https://github.com/lib/pq
+- Viper: https://github.com/spf13/viper
 
 ## API Documentation
 https://documenter.getpostman.com/view/29417482/2s9Y5cuLTS
 
+## Schema
 <div style="text-align:center;">
   <img src="https://github.com/phlucasfr/simple_bank/blob/main/assets/images/PicPay%20Simplificado.png" style="width: 75%; height: 75%;">
 </div>
