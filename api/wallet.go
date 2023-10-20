@@ -10,7 +10,7 @@ import (
 
 type createWalletRequest struct {
 	UserID   int64  `json:"user_id" binding:"required"`
-	Currency string `json:"currency" binding:"required,oneof=EUR USD BRL"`
+	Currency string `json:"currency" binding:"required,currency"`
 }
 
 func (server *Server) createWallet(ctx *gin.Context) {

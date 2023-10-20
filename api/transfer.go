@@ -13,7 +13,7 @@ type transferRequest struct {
 	FromWalletID int64  `json:"from_wallet_id" binding:"required,min=1"`
 	ToWalletID   int64  `json:"to_wallet_id" binding:"required,min=1"`
 	Amount       int64  `json:"amount" binding:"required,gt=0"`
-	Currency     string `json:"currency" binding:"required,oneof=EUR USD BRL"`
+	Currency     string `json:"currency" binding:"required,currency"`
 }
 
 func (server *Server) createTransfer(ctx *gin.Context) {
