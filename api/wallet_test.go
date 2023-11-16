@@ -109,13 +109,13 @@ func TestDeleteWalletAPI(t *testing.T) {
 
 	testCases := []struct {
 		name          string
-		walletID      int64
+		Owner         int64
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
-			name:     "OK",
-			walletID: wallet.ID,
+			name:  "OK",
+			Owner: wallet.ID,
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
 					DeleteWallet(gomock.Any(), wallet.ID).
@@ -126,8 +126,8 @@ func TestDeleteWalletAPI(t *testing.T) {
 			},
 		},
 		{
-			name:     "NotFound",
-			walletID: wallet.ID,
+			name:  "NotFound",
+			Owner: wallet.ID,
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
 					DeleteWallet(gomock.Any(), wallet.ID).
@@ -139,8 +139,8 @@ func TestDeleteWalletAPI(t *testing.T) {
 			},
 		},
 		{
-			name:     "InternalError",
-			walletID: wallet.ID,
+			name:  "InternalError",
+			Owner: wallet.ID,
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
 					DeleteWallet(gomock.Any(), wallet.ID).
@@ -152,8 +152,8 @@ func TestDeleteWalletAPI(t *testing.T) {
 			},
 		},
 		{
-			name:     "InvalidID",
-			walletID: 0,
+			name:  "InvalidID",
+			Owner: 0,
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
 					DeleteWallet(gomock.Any(), gomock.Any()).
@@ -178,7 +178,7 @@ func TestDeleteWalletAPI(t *testing.T) {
 			server := NewServer(store)
 			recorder := httptest.NewRecorder()
 
-			url := fmt.Sprintf("/wallets/%d", tc.walletID)
+			url := fmt.Sprintf("/wallets/%d", tc.Owner)
 			request, err := http.NewRequest(http.MethodDelete, url, nil)
 
 			require.NoError(t, err)
@@ -192,7 +192,7 @@ func TestDeleteWalletAPI(t *testing.T) {
 func randomWallet() db.Wallet {
 	return db.Wallet{
 		ID:       util.RandomInt(1, 100),
-		UserID:   util.RandomInt(1, 100),
+		Owner:    util.RandomString(10),
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}

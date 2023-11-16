@@ -14,11 +14,11 @@ type Querier interface {
 	CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateWallet(ctx context.Context, arg CreateWalletParams) (Wallet, error)
-	DeleteUser(ctx context.Context, id int64) error
+	DeleteUser(ctx context.Context, username string) error
 	DeleteWallet(ctx context.Context, id int64) error
 	GetEntry(ctx context.Context, id int64) (Entry, error)
 	GetTransfer(ctx context.Context, id int64) (Transfer, error)
-	GetUser(ctx context.Context, id int64) (User, error)
+	GetUser(ctx context.Context, username string) (User, error)
 	GetWallet(ctx context.Context, id int64) (Wallet, error)
 	GetWalletForUpdate(ctx context.Context, id int64) (Wallet, error)
 	ListEntries(ctx context.Context, arg ListEntriesParams) ([]Entry, error)

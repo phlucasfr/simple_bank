@@ -27,19 +27,20 @@ type Transfer struct {
 }
 
 type User struct {
-	ID          int64        `json:"id"`
-	FullName    string       `json:"full_name"`
-	CpfCnpj     string       `json:"cpf_cnpj"`
-	Email       string       `json:"email"`
-	Password    string       `json:"password"`
-	IsMerchant  sql.NullBool `json:"is_merchant"`
-	CreatedAt   sql.NullTime `json:"created_at"`
-	LastUpdated sql.NullTime `json:"last_updated"`
+	Username          string       `json:"username"`
+	FullName          string       `json:"full_name"`
+	CpfCnpj           string       `json:"cpf_cnpj"`
+	Email             string       `json:"email"`
+	HashedPassword    string       `json:"hashed_password"`
+	PasswordChangedAt time.Time    `json:"password_changed_at"`
+	IsMerchant        sql.NullBool `json:"is_merchant"`
+	CreatedAt         time.Time    `json:"created_at"`
+	LastUpdated       sql.NullTime `json:"last_updated"`
 }
 
 type Wallet struct {
 	ID          int64         `json:"id"`
-	UserID      int64         `json:"user_id"`
+	Owner       string        `json:"owner"`
 	Balance     int64         `json:"balance"`
 	Currency    string        `json:"currency"`
 	CreatedAt   sql.NullTime  `json:"created_at"`

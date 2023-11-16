@@ -13,7 +13,7 @@ const addWalletBalance = `-- name: AddWalletBalance :one
 UPDATE wallets
 SET balance = balance + $1
 WHERE id = $2
-RETURNING id, user_id, balance, currency, created_at, country_code
+RETURNING id, owner, balance, currency, created_at, country_code
 `
 
 type AddWalletBalanceParams struct {
@@ -26,7 +26,7 @@ func (q *Queries) AddWalletBalance(ctx context.Context, arg AddWalletBalancePara
 	var i Wallet
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
+		&i.Owner,
 		&i.Balance,
 		&i.Currency,
 		&i.CreatedAt,
@@ -37,27 +37,27 @@ func (q *Queries) AddWalletBalance(ctx context.Context, arg AddWalletBalancePara
 
 const createWallet = `-- name: CreateWallet :one
 INSERT INTO wallets (
-    user_id,
+    owner,
     balance,
     currency
 ) VALUES (
     $1, $2, $3
 )
-RETURNING id, user_id, balance, currency, created_at, country_code
+RETURNING id, owner, balance, currency, created_at, country_code
 `
 
 type CreateWalletParams struct {
-	UserID   int64  `json:"user_id"`
+	Owner    string `json:"owner"`
 	Balance  int64  `json:"balance"`
 	Currency string `json:"currency"`
 }
 
 func (q *Queries) CreateWallet(ctx context.Context, arg CreateWalletParams) (Wallet, error) {
-	row := q.db.QueryRowContext(ctx, createWallet, arg.UserID, arg.Balance, arg.Currency)
+	row := q.db.QueryRowContext(ctx, createWallet, arg.Owner, arg.Balance, arg.Currency)
 	var i Wallet
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
+		&i.Owner,
 		&i.Balance,
 		&i.Currency,
 		&i.CreatedAt,
@@ -76,7 +76,7 @@ func (q *Queries) DeleteWallet(ctx context.Context, id int64) error {
 }
 
 const getWallet = `-- name: GetWallet :one
-SELECT id, user_id, balance, currency, created_at, country_code FROM wallets
+SELECT id, owner, balance, currency, created_at, country_code FROM wallets
 WHERE id = $1 LIMIT 1
 `
 
@@ -85,7 +85,7 @@ func (q *Queries) GetWallet(ctx context.Context, id int64) (Wallet, error) {
 	var i Wallet
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
+		&i.Owner,
 		&i.Balance,
 		&i.Currency,
 		&i.CreatedAt,
@@ -95,7 +95,7 @@ func (q *Queries) GetWallet(ctx context.Context, id int64) (Wallet, error) {
 }
 
 const getWalletForUpdate = `-- name: GetWalletForUpdate :one
-SELECT id, user_id, balance, currency, created_at, country_code FROM wallets
+SELECT id, owner, balance, currency, created_at, country_code FROM wallets
 WHERE id = $1 
 LIMIT 1 
 FOR NO KEY UPDATE
@@ -106,7 +106,7 @@ func (q *Queries) GetWalletForUpdate(ctx context.Context, id int64) (Wallet, err
 	var i Wallet
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
+		&i.Owner,
 		&i.Balance,
 		&i.Currency,
 		&i.CreatedAt,
@@ -116,7 +116,7 @@ func (q *Queries) GetWalletForUpdate(ctx context.Context, id int64) (Wallet, err
 }
 
 const listWallets = `-- name: ListWallets :many
-SELECT id, user_id, balance, currency, created_at, country_code FROM wallets
+SELECT id, owner, balance, currency, created_at, country_code FROM wallets
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -138,7 +138,7 @@ func (q *Queries) ListWallets(ctx context.Context, arg ListWalletsParams) ([]Wal
 		var i Wallet
 		if err := rows.Scan(
 			&i.ID,
-			&i.UserID,
+			&i.Owner,
 			&i.Balance,
 			&i.Currency,
 			&i.CreatedAt,
@@ -161,7 +161,7 @@ const updateWallet = `-- name: UpdateWallet :one
 UPDATE wallets
 SET balance = $2
 WHERE id = $1
-RETURNING id, user_id, balance, currency, created_at, country_code
+RETURNING id, owner, balance, currency, created_at, country_code
 `
 
 type UpdateWalletParams struct {
@@ -174,7 +174,7 @@ func (q *Queries) UpdateWallet(ctx context.Context, arg UpdateWalletParams) (Wal
 	var i Wallet
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
+		&i.Owner,
 		&i.Balance,
 		&i.Currency,
 		&i.CreatedAt,

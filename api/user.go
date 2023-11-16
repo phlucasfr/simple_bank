@@ -5,12 +5,13 @@ import (
 	"errors"
 	"net/http"
 	db "picpay_simplificado/db/sqlc"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type getUserRequest struct {
-	Id int64 `uri:"id" binding:"required,min=1"`
+	Username string `uri:"id" binding:"required,min=1"`
 }
 
 func (server *Server) getUser(ctx *gin.Context) {
@@ -21,7 +22,7 @@ func (server *Server) getUser(ctx *gin.Context) {
 		return
 	}
 
-	user, err := server.store.GetUser(ctx, req.Id)
+	user, err := server.store.GetUser(ctx, req.Username)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -36,10 +37,11 @@ func (server *Server) getUser(ctx *gin.Context) {
 }
 
 type createUserRequest struct {
-	FullName string `json:"full_name" binding:"required"`
-	CpfCnpj  string `json:"cpf_cnpj" binding:"required"`
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username       string `json:"username" binding:"required"`
+	FullName       string `json:"full_name" binding:"required"`
+	CpfCnpj        string `json:"cpf_cnpj" binding:"required"`
+	Email          string `json:"email" binding:"required"`
+	HashedPassword string `json:"hashed_password" binding:"required"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -51,10 +53,10 @@ func (server *Server) createUser(ctx *gin.Context) {
 	}
 
 	arg := db.CreateUserParams{
-		FullName: req.FullName,
-		CpfCnpj:  req.CpfCnpj,
-		Email:    req.Email,
-		Password: req.Password,
+		FullName:       req.FullName,
+		CpfCnpj:        req.CpfCnpj,
+		Email:          req.Email,
+		HashedPassword: req.HashedPassword,
 	}
 
 	user, err := server.store.CreateUser(ctx, arg)
@@ -68,7 +70,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 }
 
 type deleteUserRequest struct {
-	Id int64 `uri:"id" binding:"required,min=1"`
+	Username string `uri:"id" binding:"required"`
 }
 
 func (server *Server) deleteUser(ctx *gin.Context) {
@@ -79,14 +81,14 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 		return
 	}
 
-	_, err := server.store.GetUser(ctx, req.Id)
+	_, err := server.store.GetUser(ctx, req.Username)
 
 	if err != nil && err == sql.ErrNoRows {
 		ctx.JSON(http.StatusNotFound, errorResponse(err))
 		return
 	}
 
-	err = server.store.DeleteUser(ctx, req.Id)
+	err = server.store.DeleteUser(ctx, req.Username)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -124,14 +126,14 @@ func (server *Server) listUsers(ctx *gin.Context) {
 }
 
 type updateUserRequest struct {
-	ID         int64        `json:"id" binding:"required,min=1"`
-	Password   string       `json:"password"`
-	Email      string       `json:"email"`
-	IsMerchant sql.NullBool `json:"is_merchant"`
+	Username       string       `json:"username" binding:"required"`
+	HashedPassword string       `json:"hashed_password"`
+	Email          string       `json:"email"`
+	IsMerchant     sql.NullBool `json:"is_merchant"`
 }
 
 func (req *updateUserRequest) ValidateUpdateUserResquet() error {
-	if req.Email == "" && req.Password == "" && !req.IsMerchant.Valid {
+	if req.Email == "" && req.HashedPassword == "" && !req.IsMerchant.Valid {
 		x := errors.New("no props received")
 		return x
 	}
@@ -146,7 +148,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
-	user, err := server.store.GetUser(ctx, req.ID)
+	user, err := server.store.GetUser(ctx, req.Username)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -172,10 +174,11 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		emailValue = req.Email
 	}
 
-	if req.Password == "" {
-		passwordValue = user.Password
+	if req.HashedPassword == "" {
+		passwordValue = user.HashedPassword
+		user.PasswordChangedAt = time.Now()
 	} else {
-		passwordValue = req.Password
+		passwordValue = req.HashedPassword
 	}
 
 	if !req.IsMerchant.Valid {
@@ -185,10 +188,10 @@ func (server *Server) updateUser(ctx *gin.Context) {
 	}
 
 	arg := db.UpdateUserParams{
-		ID:         req.ID,
-		Password:   passwordValue,
-		Email:      emailValue,
-		IsMerchant: isMerchantValue,
+		Username:       req.Username,
+		HashedPassword: passwordValue,
+		Email:          emailValue,
+		IsMerchant:     isMerchantValue,
 	}
 
 	user, err = server.store.UpdateUser(ctx, arg)

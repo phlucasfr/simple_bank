@@ -11,10 +11,10 @@ import (
 )
 
 func createRandomWallet(t *testing.T) Wallet {
-	UID := createRandomUser(t).ID
+	UID := createRandomUser(t).Username
 
 	walletParams := CreateWalletParams{
-		UserID:   UID,
+		Owner:    UID,
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}
@@ -24,7 +24,7 @@ func createRandomWallet(t *testing.T) Wallet {
 	require.NoError(t, err)
 	require.NotEmpty(t, wallet)
 
-	require.Equal(t, walletParams.UserID, wallet.UserID)
+	require.Equal(t, walletParams.Owner, wallet.Owner)
 	require.Equal(t, walletParams.Balance, wallet.Balance)
 	require.Equal(t, walletParams.Currency, wallet.Currency)
 
@@ -47,7 +47,7 @@ func TestGetWallet(t *testing.T) {
 	require.NotEmpty(t, wallet2)
 
 	require.Equal(t, wallet1.ID, wallet2.ID)
-	require.Equal(t, wallet1.UserID, wallet2.UserID)
+	require.Equal(t, wallet1.Owner, wallet2.Owner)
 	require.Equal(t, wallet1.Balance, wallet2.Balance)
 	require.Equal(t, wallet1.Currency, wallet2.Currency)
 
@@ -68,7 +68,7 @@ func TestUpdateWallet(t *testing.T) {
 	require.NotEmpty(t, wallet2)
 
 	require.Equal(t, wallet1.ID, wallet2.ID)
-	require.Equal(t, wallet1.UserID, wallet2.UserID)
+	require.Equal(t, wallet1.Owner, wallet2.Owner)
 	require.Equal(t, walletParams.Balance, wallet2.Balance)
 	require.Equal(t, wallet1.Currency, wallet2.Currency)
 

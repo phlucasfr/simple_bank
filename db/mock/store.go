@@ -111,7 +111,7 @@ func (mr *MockStoreMockRecorder) CreateWallet(arg0, arg1 interface{}) *gomock.Ca
 }
 
 // DeleteUser mocks base method.
-func (m *MockStore) DeleteUser(arg0 context.Context, arg1 int64) error {
+func (m *MockStore) DeleteUser(arg0 context.Context, arg1 string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteUser", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -169,7 +169,7 @@ func (mr *MockStoreMockRecorder) GetTransfer(arg0, arg1 interface{}) *gomock.Cal
 }
 
 // GetUser mocks base method.
-func (m *MockStore) GetUser(arg0 context.Context, arg1 int64) (db.User, error) {
+func (m *MockStore) GetUser(arg0 context.Context, arg1 string) (db.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUser", arg0, arg1)
 	ret0, _ := ret[0].(db.User)

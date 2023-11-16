@@ -14,10 +14,11 @@ func randomUser(t *testing.T) (user db.User, password string) {
 	require.NoError(t, err)
 
 	user = db.User{
-		FullName: util.RandomString(10),
-		CpfCnpj:  util.RandomCpfCnpj(),
-		Email:    user.FullName + "@test.go",
-		Password: hashedPassword,
+		Username:       util.RandomString(5),
+		FullName:       util.RandomString(10) + " " + util.RandomString(10),
+		CpfCnpj:        util.RandomCpfCnpj(),
+		Email:          user.FullName + "@test.go",
+		HashedPassword: hashedPassword,
 	}
 	return
 }

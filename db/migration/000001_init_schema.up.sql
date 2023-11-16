@@ -1,17 +1,18 @@
 CREATE TABLE "users" (
-  "id" bigserial PRIMARY KEY,
+  "username" varchar PRIMARY KEY,
   "full_name" varchar NOT NULL,
   "cpf_cnpj" varchar UNIQUE NOT NULL,
   "email" varchar UNIQUE NOT NULL,
-  "password" varchar NOT NULL,
+  "hashed_password" varchar NOT NULL,
+  "password_changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
   "is_merchant" boolean DEFAULT false,
-  "created_at" timestamptz DEFAULT (now()),
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
   "last_updated" timestamptz
 );
 
 CREATE TABLE "wallets" (
   "id" bigserial PRIMARY KEY,
-  "user_id" bigint UNIQUE NOT NULL,
+  "owner" varchar NOT NULL,
   "balance" bigint NOT NULL DEFAULT 0,
   "currency" varchar NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
@@ -33,7 +34,9 @@ CREATE TABLE "transfers" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-CREATE INDEX ON "wallets" ("user_id");
+CREATE INDEX ON "wallets" ("owner");
+
+CREATE UNIQUE INDEX ON "wallets" ("owner", "currency");
 
 CREATE INDEX ON "entries" ("wallet_id");
 
@@ -47,7 +50,7 @@ COMMENT ON COLUMN "entries"."amount" IS 'can be negative or positive';
 
 COMMENT ON COLUMN "transfers"."amount" IS 'must be positive';
 
-ALTER TABLE "wallets" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "wallets" ADD FOREIGN KEY ("owner") REFERENCES "users" ("username");
 
 ALTER TABLE "entries" ADD FOREIGN KEY ("wallet_id") REFERENCES "wallets" ("id");
 

@@ -1,6 +1,6 @@
 -- name: CreateWallet :one
 INSERT INTO wallets (
-    user_id,
+    owner,
     balance,
     currency
 ) VALUES (
