@@ -10,6 +10,7 @@ Simple Bank is a digital finance application tailored for Common Users and Merch
 - pq: https://github.com/lib/pq
 - Viper: https://github.com/spf13/viper
 - Mockgen: https://github.com/golang/mock
+- Validator: https://github.com/go-playground/validator
 
 ## API Documentation
 https://documenter.getpostman.com/view/29417482/2s9Y5cuLTS
