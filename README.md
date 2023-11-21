@@ -2,10 +2,12 @@
 Simple Bank is a digital finance application tailored for Common Users and Merchants. Each user type has a wallet for facilitating transfers. This repository focuses on the core feature: peer-to-peer transfer functionality.
 
 ## Stacks
-- SQLC: https://sqlc.dev/
 - Docker: https://www.docker.com/
-- Testify: https://github.com/stretchr/testify
 - Postgres: https://www.postgresql.org/
+    
+## Packages
+- SQLC: https://sqlc.dev/
+- Testify: https://github.com/stretchr/testify
 - Migrate: https://github.com/golang-migrate/migrate
 - pq: https://github.com/lib/pq
 - Viper: https://github.com/spf13/viper
