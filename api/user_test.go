@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func randomUser(t *testing.T) (user db.User, password string) {
+func randomUser(t *testing.T) (user db.User, password string, err error) {
 	password = util.RandomString(6)
 	hashedPassword, err := util.HashPassword(password)
 	require.NoError(t, err)
@@ -21,4 +21,20 @@ func randomUser(t *testing.T) (user db.User, password string) {
 		HashedPassword: hashedPassword,
 	}
 	return
+}
+
+func TestCreateUser(t *testing.T) {
+	user, password, err := randomUser(t)
+	require.NoError(t, err)
+
+	arg := db.CreateUserParams{
+		Username:       user.Username,
+		FullName:       user.FullName,
+		CpfCnpj:        user.CpfCnpj,
+		Email:          user.Email,
+		HashedPassword: password,
+	}
+	require.NotEmpty(t, arg)
+
+	//TODO: implementar testes
 }
